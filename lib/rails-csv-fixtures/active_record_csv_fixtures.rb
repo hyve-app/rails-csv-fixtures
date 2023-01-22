@@ -20,12 +20,18 @@ module RailsCsvFixtures
 
     def read_csv_fixture_files(*args)
       fixtures = fixtures() || {}
-      reader = CSV.parse(erb_render(IO.read(csv_file_path(*args))))
+      json_converter = proc { |v| JSON.parse(v) rescue v }
+      reader = CSV.parse(erb_render(IO.read(csv_file_path(*args))), converters: json_converter)
       header = reader.shift
       i = 0
       reader.each do |row|
         data = {}
-        row.each_with_index { |cell, j| data[header[j].to_s.strip] = cell.to_s.strip unless cell.nil? }
+        row.each_with_index do |cell, j|
+          unless cell.nil?
+            cell = cell.to_s.strip unless cell.is_a?(Hash)
+            data[header[j].to_s.strip] = cell
+          end
+        end
         class_name = (args.second || model_class && model_class.name)
         label = data['_label'] || "#{class_name.to_s.underscore}_#{i+=1}"
         data.delete '_label'
