@@ -25,7 +25,7 @@ module RailsCsvFixtures
       i = 0
       reader.each do |row|
         data = {}
-        row.each_with_index { |cell, j| data[header[j].to_s.strip] = cell.nil? ? nil : cell.to_s.strip }
+        row.each_with_index { |cell, j| data[header[j].to_s.strip] = cell.to_s.strip unless cell.nil? }
         class_name = (args.second || model_class && model_class.name)
         label = data['_label'] || "#{class_name.to_s.underscore}_#{i+=1}"
         data.delete '_label'
