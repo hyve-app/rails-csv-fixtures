@@ -27,7 +27,9 @@ module RailsCsvFixtures
         data = {}
         row.each_with_index { |cell, j| data[header[j].to_s.strip] = cell.nil? ? nil : cell.to_s.strip }
         class_name = (args.second || model_class && model_class.name)
-        fixtures["#{class_name.to_s.underscore}_#{i+=1}"] = ActiveRecord::Fixture.new(data, model_class)
+        label = data['_label'] || "#{class_name.to_s.underscore}_#{i+=1}"
+        data.delete '_label'
+        fixtures[label] = ActiveRecord::Fixture.new(data, model_class)
       end
       fixtures
     end
