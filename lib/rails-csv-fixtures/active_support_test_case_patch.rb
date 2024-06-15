@@ -14,8 +14,9 @@ module RailsCsvFixtures
       def fixtures_with_csv_support(*fixture_names)
         # When using :all, intercept so we can list both the csv and yml files
         if fixture_names.first == :all
-          fixture_names = Dir["#{fixture_path}/**/*.{csv,yml}"]
-          fixture_names.map! { |f| f[(fixture_path.size + 1)..-5] }
+          fixture_names = fixture_paths.map do |fixture_path|
+            Dir["#{fixture_path}/**/*.{csv,yml}"].map { |f| f[(fixture_path.size + 1)..-5] }
+          end.flatten
         end
 
         # Continue on with all the names instead of :all
